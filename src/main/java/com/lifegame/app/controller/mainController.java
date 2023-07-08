@@ -8,16 +8,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 public class mainController {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
 
     @FXML
     private Canvas canvas;
@@ -34,23 +25,39 @@ public class mainController {
 
     @FXML
     void onCanvasMouseDragged(MouseEvent event) {
-
+        double x = event.getX(), y = event.getY();
+        x -= x % cellW;
+        y -= y % cellH;
+        switch (event.getButton()) {
+            case PRIMARY -> {
+                map.getMap()[(int) (x / cellW)][(int) (y / cellH)].setAlive();
+                gc.setFill(Color.BLACK);
+            }
+            case SECONDARY -> {
+                map.getMap()[(int) (x / cellW)][(int) (y / cellH)].setDead();
+                gc.setFill(Color.WHITE);
+            }
+        }
+        gc.fillRect(x, y, cellW, cellH);
+        gc.strokeRect(x, y, cellW, cellH);
     }
 
-    GraphicsContext gc;
-    int mapW = 190, mapH = 106;
-    double cellW, cellH, canvasW, canvasH;
+    private GraphicsContext gc;
+    private final int mapW = 190;
+    private final int mapH = 106;
+    private double cellW, cellH, canvasW, canvasH;
+    private mapModel map;
 
     @FXML
     void initialize() {
         assert canvas != null : "fx:id=\"canvas\" was not injected: check your FXML file 'mainView.fxml'.";
         gc = canvas.getGraphicsContext2D();
-        mapModel map = new mapModel(mapW, mapH);
+        map = new mapModel(mapW, mapH);
         cellH = map.getCellH();
         cellW = map.getCellW();
-        canvasW = canvas.getWidth()-20;
-        canvasH = canvas.getHeight()-20;
-        gc.setStroke(Color.rgb(200, 200, 200));
+        canvasW = canvas.getWidth() - 20;
+        canvasH = canvas.getHeight() - 20;
+        gc.setStroke(Color.rgb(230, 230, 230));
         for (int i = 0; i < canvasW; i += cellW)
             for (int j = 0; j < canvasH; j += cellH)
                 gc.strokeRect(i, j, cellW, cellH);
