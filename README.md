@@ -1,2 +1,2 @@
-# TheLifeGame
+# The Life Game
 Игра "жизнь" на клеточных автоматах
