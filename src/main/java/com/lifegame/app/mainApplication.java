@@ -7,10 +7,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class application extends Application {
+public class mainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(application.class.getResource("mainView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(mainApplication.class.getResource("mainView.fxml"));
+        System.out.println(1);
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("The Life Game");
         stage.setScene(scene);
