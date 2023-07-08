@@ -25,21 +25,23 @@ public class mainController {
 
     @FXML
     void onCanvasMouseDragged(MouseEvent event) {
-        double x = event.getX(), y = event.getY();
-        x -= x % cellW;
-        y -= y % cellH;
-        switch (event.getButton()) {
-            case PRIMARY -> {
-                map.getMap()[(int) (x / cellW)][(int) (y / cellH)].setAlive();
-                gc.setFill(Color.BLACK);
+        if (drawAvailable) {
+            double x = event.getX(), y = event.getY();
+            x -= x % cellW;
+            y -= y % cellH;
+            switch (event.getButton()) {
+                case PRIMARY -> {
+                    map.getMap()[(int) (x / cellW)][(int) (y / cellH)].setAlive();
+                    gc.setFill(Color.BLACK);
+                }
+                case SECONDARY -> {
+                    map.getMap()[(int) (x / cellW)][(int) (y / cellH)].setDead();
+                    gc.setFill(Color.WHITE);
+                }
             }
-            case SECONDARY -> {
-                map.getMap()[(int) (x / cellW)][(int) (y / cellH)].setDead();
-                gc.setFill(Color.WHITE);
-            }
+            gc.fillRect(x, y, cellW, cellH);
+            gc.strokeRect(x, y, cellW, cellH);
         }
-        gc.fillRect(x, y, cellW, cellH);
-        gc.strokeRect(x, y, cellW, cellH);
     }
 
     private GraphicsContext gc;
@@ -47,10 +49,12 @@ public class mainController {
     private final int mapH = 106;
     private double cellW, cellH, canvasW, canvasH;
     private mapModel map;
+    private boolean drawAvailable;
 
     @FXML
     void initialize() {
         assert canvas != null : "fx:id=\"canvas\" was not injected: check your FXML file 'mainView.fxml'.";
+        drawAvailable = true;
         gc = canvas.getGraphicsContext2D();
         map = new mapModel(mapW, mapH);
         cellH = map.getCellH();
