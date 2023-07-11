@@ -1,21 +1,17 @@
 package com.lifegame.app.model;
 
 public class cellModel {
-    private boolean isAlive;
+    private int value;
 
     public cellModel() {
-        this.isAlive = false;
+        this.value = 0;
     }
 
-    public void setAlive() {
-        this.isAlive = true;
+    public void setValue(int value) {
+        this.value = 1;
     }
 
-    public void setDead() {
-        this.isAlive = false;
-    }
-
-    public boolean isAlive() {
-        return this.isAlive;
+    public int getValue() {
+        return this.value;
     }
 }
