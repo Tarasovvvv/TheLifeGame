@@ -1,6 +1,7 @@
 package com.lifegame.app.controller;
 
 import com.lifegame.app.mainApplication;
+import com.lifegame.app.model.cellModel;
 import com.lifegame.app.model.gameSessionModel;
 import com.lifegame.app.model.mapModel;
 import javafx.application.Platform;
@@ -54,9 +55,6 @@ public class mainController extends mainApplication {
             paneW = anchorPaneW - 30 - 200;
             gc.setFill(Color.WHITE);
             gc.fillRect(0, 0, paneW, paneH);
-            for (int i = 0; i < paneH; i += squareEdgeLength)
-                for (int j = 0; j < paneW; j += squareEdgeLength)
-                    gc.strokeRect(j, i, squareEdgeLength, squareEdgeLength);
         }
         if (gameOnPause) {
             double x = event.getX(), y = event.getY();
@@ -73,55 +71,47 @@ public class mainController extends mainApplication {
                         gc.setFill(Color.WHITE);
                     }
                 }
-
                 gc.fillRect(x, y, squareEdgeLength, squareEdgeLength);
-                gc.strokeRect(x, y, squareEdgeLength, squareEdgeLength);
             }
         }
     }
 
     @FXML
-    void clearMap(MouseEvent event) {
-        if (!gameOnPause) {
-            gameOnPause = true;
-            session.interrupt();
-            start_pause_button.setText("Старт");
-        }
+    void clearMap(MouseEvent event) throws InterruptedException {
+        gameOnPause = true;
+        gameSession.stopT();
+        start_pause_button.setText("Старт");
         gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, canvasW, canvasH);
-        gc.setStroke(Color.rgb(230, 230, 230));
-        for (int i = 0; i < paneH; i += squareEdgeLength)
-            for (int j = 0; j < paneW; j += squareEdgeLength)
-                gc.strokeRect(j, i, squareEdgeLength, squareEdgeLength);
+        gc.fillRect(0, 0, paneW, paneH);
         map.clear();
+        gameSession.setMap(this.map);
     }
 
 
     @FXML
-    void startPauseButtonClicked(MouseEvent event)  {
+    void startPauseButtonClicked(MouseEvent event) throws InterruptedException {
         if (gameOnPause) {
             gameOnPause = false;
-            session = new Thread(new gameSessionModel(50, this.map, this.canvas));
-            session.start();
+            //gameSessionModel.map = this.map;
+            gameSession.startT();
             start_pause_button.setText("Стоп");
         } else {
             gameOnPause = true;
-            session.interrupt();
+            gameSession.stopT();
             start_pause_button.setText("Старт");
         }
     }
 
-    private  gameSessionModel gameSession;
     private boolean gameOnPause;
-    private final int squareEdgeLength = 10;
-    private double cellW, cellH;
+    private final int squareEdgeLength = 4;
     private double canvasH, canvasW, paneH, paneW, anchorPaneH, anchorPaneW;
     private mapModel map;
     private Thread session;
+    private gameSessionModel gameSession;
     private GraphicsContext gc;
 
     @FXML
-    void initialize()   {
+    void initialize() {
         assert pane != null : "fx:id=\"pane\" was not injected: check your FXML file 'mainView.fxml'.";
         assert canvas != null : "fx:id=\"canvas\" was not injected: check your FXML file 'mainView.fxml'.";
         assert anchorPane != null : "fx:id=\"anchorPane\" was not injected: check your FXML file 'mainView.fxml'.";
@@ -139,9 +129,10 @@ public class mainController extends mainApplication {
         gc.fillRect(0, 0, paneW, paneH);
         gameOnPause = true;
         map = new mapModel((int) canvasH / squareEdgeLength, (int) canvasW / squareEdgeLength);
-        gc.setStroke(Color.rgb(230, 230, 230));
-        for (int i = 0; i < paneH; i += squareEdgeLength)
-            for (int j = 0; j < paneW; j += squareEdgeLength)
-                gc.strokeRect(j, i, squareEdgeLength, squareEdgeLength);
+
+        gameSession = new gameSessionModel(50, this.map, this.canvas, paneH, paneW);
+        session = new Thread(gameSession);
+        session.start();
+        gameSession.stopT();
     }
 }
