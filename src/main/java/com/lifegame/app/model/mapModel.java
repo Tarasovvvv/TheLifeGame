@@ -24,10 +24,6 @@ public class mapModel {
                 this.map[i][j].setValue(0);
     }
 
-    public void setMap(cellModel[][] newMap) {
-        this.map = newMap;
-    }
-
     public cellModel[][] getMap() {
         return this.map;
     }
